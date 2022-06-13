@@ -43,7 +43,7 @@ namespace Dorkbots.ServiceLocatorTools
     /// The service locator pattern is a design pattern used in software development to encapsulate the processes involved in obtaining a service with a strong abstraction layer.
     /// This pattern uses a central registry known as the “service locator” which on request returns the information necessary to perform a certain task.
     /// </summary>
-    public class ServiceLocator
+    public static class ServiceLocator
     {
         private static readonly Dictionary<Type, object> Services = new Dictionary<Type, object>();
 
@@ -52,16 +52,22 @@ namespace Dorkbots.ServiceLocatorTools
         /// </summary>
         /// <param name="serviceInstance">An instance of the service</param>
         /// <typeparam name="T">The service type</typeparam>
-        public static void Register<T>(object serviceInstance)
+        public static T Register<T>(object serviceInstance)
         {
             if (Services.ContainsKey(typeof(T)))
             {
                 Debug.LogError("Service is already registered! Please unregister the current service before registering a new instance.");
             }
-            else
+            else if (serviceInstance is T)
             {
                 Services[typeof(T)] = serviceInstance;
             }
+            else
+            {
+                Debug.LogError("Object does not derived from the service type!");
+            }
+
+            return (T)serviceInstance;
         }
 
         /// <summary>
@@ -84,6 +90,16 @@ namespace Dorkbots.ServiceLocatorTools
         public static T Resolve<T>()
         {
             return (T)Services[typeof(T)];
+        }
+        
+        /// <summary>
+        /// Checks if a service is registered.
+        /// </summary>
+        /// <typeparam name="T">The service type</typeparam>
+        /// <returns>returns true if the service is registered.</returns>
+        public static bool IsRegistered<T>()
+        {
+            return Services.ContainsKey(typeof(T));
         }
         
         /// <summary>
