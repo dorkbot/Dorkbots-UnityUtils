@@ -6,23 +6,23 @@
 * Managed by Dorkbots
 * http://www.dorkbots.com/
 * Version: 1
-* 
+*
 * Licence Agreement
 *
 * You may distribute and modify this class freely, provided that you leave this header intact,
 * and add appropriate headers to indicate your changes. Credit is appreciated in applications
 * that use this code, but is not required.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,17 +31,18 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 */
+
+using System;
 using System.Collections;
 using Dorkbots.MonoBehaviorUtils;
-using Signals;
 using UnityEngine;
 
 namespace Dorkbots.UI
 {
     public class FadeCanvasGroup
     {
-        public Signal fadeDownComplete { get; private set; }
-        public Signal fadeUpComplete { get; private set; }
+        public event Action FadeDownCompleteAction;
+        public event Action FadeUpCompleteAction;
 
         private CanvasGroup canvasGroupFadingDown;
         private CanvasGroup canvasGroupFadingUp;
@@ -54,21 +55,19 @@ namespace Dorkbots.UI
         public FadeCanvasGroup(MonoBehaviour monoBehaviour)
         {
             this.monoBehaviour = monoBehaviour;
-            fadeDownComplete = new Signal();
-            fadeUpComplete = new Signal();
         }
 
         public void FadeDownUP(CanvasGroup fromCanvasGroup, CanvasGroup toCanvasGroup, float seconds, float startDelay = 0)
         {
             canvasGroupFadingUp = toCanvasGroup;
             fadeDownUpSeconds = seconds;
-            fadeDownComplete.Add(FadeDownCompleteHandler);
+            FadeDownCompleteAction += FadeDownCompleteHandler;
             FadeDown(fromCanvasGroup, seconds, startDelay);
         }
 
         private void FadeDownCompleteHandler()
         {
-            fadeDownComplete.Remove(FadeDownCompleteHandler);
+            FadeDownCompleteAction -= FadeDownCompleteHandler;
             FadeUp(canvasGroupFadingUp, fadeDownUpSeconds);
         }
 
@@ -81,7 +80,7 @@ namespace Dorkbots.UI
         {
             canvasGroupFadingUp = canvasGroup;
             canvasGroupFadingUp.gameObject.SetActive(true);
-            //if (canvasGroupFadingUp.alpha >= 1) 
+            //if (canvasGroupFadingUp.alpha >= 1)
             canvasGroupFadingUp.alpha = 0;
             float fadeStep = GetFadeStep(seconds);
             StartStopCoroutine.StartCoroutine(ref fadeUpCoroutine, FadeUpEnumerator(fadeStep, startDelay), monoBehaviour);
@@ -91,7 +90,7 @@ namespace Dorkbots.UI
         {
             canvasGroupFadingDown = canvasGroup;
             canvasGroupFadingDown.gameObject.SetActive(true);
-            //if (canvasGroupFadingDown.alpha <= 0) 
+            //if (canvasGroupFadingDown.alpha <= 0)
             canvasGroupFadingDown.alpha = 1;
             float fadeStep = GetFadeStep(seconds);
             StartStopCoroutine.StartCoroutine(ref fadeDownCoroutine, FadeDownEnumerator(fadeStep, startDelay), monoBehaviour);
@@ -118,10 +117,8 @@ namespace Dorkbots.UI
         public void Dispose()
         {
             Stop();
-            fadeDownComplete.Dispose();
-            fadeDownComplete = null;
-            fadeUpComplete.Dispose();
-            fadeUpComplete = null;
+            FadeDownCompleteAction = null;
+            FadeUpCompleteAction = null;
         }
 
         private IEnumerator FadeUpEnumerator(float fadeStep, float startDelay)
@@ -136,7 +133,7 @@ namespace Dorkbots.UI
                 yield return new WaitForSeconds(waitSeconds);
             }
 
-            fadeUpComplete.Dispatch();
+            FadeUpCompleteAction?.Invoke();
         }
 
         private IEnumerator FadeDownEnumerator(float fadeStep, float startDelay)
@@ -153,7 +150,7 @@ namespace Dorkbots.UI
 
             canvasGroupFadingDown.gameObject.SetActive(false);
 
-            fadeDownComplete.Dispatch();
+            FadeDownCompleteAction?.Invoke();
         }
 
         private float GetFadeStep(float seconds)

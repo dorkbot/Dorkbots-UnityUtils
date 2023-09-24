@@ -1,4 +1,4 @@
-/*
+﻿/*
 * Author: Dayvid jones
 * http://www.dayvid.com
 * Copyright (c) Superhero Robot 2018
@@ -31,29 +31,32 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 */
-using System;
+
 using UnityEngine;
 
-namespace Dorkbots.Tools
+namespace Dorkbots.MathTools.LinearAlgebra
 {
-    public class ExpireApp : MonoBehaviour
+    public class LineTools
     {
-        [Tooltip("Enter the month day and year, example: 10-15-2019")]
-        [SerializeField] private String startDateString = "month-day-year";
-        [SerializeField] private int amountOfDays = 2;
-
-        private void Start()
+        /// <summary>
+        /// Returns the nearest point (Vector3) on a line
+        /// </summary>
+        /// <param name="start">Start position of the line</param>
+        /// <param name="end">End position of the line</param>
+        /// <param name="point">The point</param>
+        /// <returns>Returns the nearest position (Vector3) on the line</returns>
+        public static Vector3 NearestPointOnLine(Vector3 start, Vector3 end, Vector3 point)
         {
-            // locks
-            DateTime startDate = DateTime.Parse(startDateString);
-            DateTime nowDate = DateTime.Now;
-            TimeSpan elapsed = nowDate.Subtract(startDate);
-            double daysAgo = elapsed.TotalDays;
-            if (daysAgo > amountOfDays)
-            {
-                Application.Quit();
-                throw new Exception();
-            }
+            // define the line
+            Vector3 line = (end - start);
+            float lineLength = line.magnitude;
+            line.Normalize();
+            // get the dot product
+            Vector3 leftHandSide = point - start;
+            float dot = Vector3.Dot(leftHandSide, line);
+            dot = Mathf.Clamp(dot, 0f, lineLength);
+            
+            return start + line * dot;
         }
     }
 }

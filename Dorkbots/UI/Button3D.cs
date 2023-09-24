@@ -6,23 +6,23 @@
 * Managed by Dorkbots
 * http://www.dorkbots.com/
 * Version: 1
-* 
+*
 * Licence Agreement
 *
 * You may distribute and modify this class freely, provided that you leave this header intact,
 * and add appropriate headers to indicate your changes. Credit is appreciated in applications
 * that use this code, but is not required.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,7 +31,8 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 */
-using Signals;
+
+using System;
 using UnityEngine;
 
 namespace Dorkbots.UI
@@ -39,25 +40,19 @@ namespace Dorkbots.UI
     [RequireComponent(typeof(Collider))]
     public class Button3D : MonoBehaviour
     {
-        public Signal<Button3D> mouseUpSignal { get; private set; }
-        public Signal<Button3D> mouseDownSignal { get; private set; }
+        public event Action<Button3D> MouseUpAction;
+        public event Action<Button3D> MouseDownAction;
 
         private bool perform = true;
 
-        private void Awake()
-        {
-            mouseUpSignal = new Signal<Button3D>();
-            mouseDownSignal = new Signal<Button3D>();
-        }
-
         void OnMouseDown()
         {
-            if (perform) mouseDownSignal.Dispatch(this);
+            if (perform) MouseDownAction?.Invoke(this);
         }
 
-        private void OnMouseUp()
+        void OnMouseUp()
         {
-            if (perform) mouseUpSignal.Dispatch(this);
+            if (perform) MouseUpAction?.Invoke(this);
         }
 
         void OnEnable()
@@ -69,5 +64,15 @@ namespace Dorkbots.UI
         {
             perform = false;
         }
+
+        public void RaycastHit()
+        {
+            if (perform)
+            {
+                MouseDownAction?.Invoke(this);
+                MouseUpAction?.Invoke(this);
+            }
+        }
+
     }
 }

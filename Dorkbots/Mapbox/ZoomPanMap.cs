@@ -4,7 +4,6 @@ using Mapbox.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System;
-using Signals;
 
 namespace Dorkbots.Mapbox
 {
@@ -18,23 +17,22 @@ namespace Dorkbots.Mapbox
         [SerializeField] private AbstractMap _mapManager;
         [SerializeField] private bool _useDegreeMethod;
 
-        public Signal panningSignal { get; private set; }
+        public event Action PanningAction;
 
         private Vector3 _origin;
         private Vector3 _mousePosition;
         private Vector3 _mousePositionPrevious;
-        private bool _shouldDrag;
+        private bool _shouldDrag = false;
         private bool _isInitialized = false;
         private Plane _groundPlane = new Plane(Vector3.up, 0);
         private bool _dragStartedOnUI = false;
 
         void Awake()
         {
-            panningSignal = new Signal();
             if (null == _referenceCamera)
             {
                 _referenceCamera = GetComponent<Camera>();
-                if (null == _referenceCamera) { Debug.LogErrorFormat("{0}: reference camera not set", this.GetType().Name); }
+                if (null == _referenceCamera) { Debug.LogErrorFormat("{0}: <ZoomPanMap> reference camera not set", this.GetType().Name); }
             }
             _mapManager.OnInitialized += () =>
             {
@@ -58,7 +56,10 @@ namespace Dorkbots.Mapbox
 
         private void LateUpdate()
         {
-            if (!_isInitialized) { return; }
+            if (!_isInitialized)
+            {
+                return;
+            }
 
             if (!_dragStartedOnUI)
             {
@@ -75,8 +76,7 @@ namespace Dorkbots.Mapbox
 
         private void OnDestroy()
         {
-            panningSignal.Dispose();
-            panningSignal = null;
+            PanningAction = null;
         }
 
         void HandleMouseAndKeyBoard()
@@ -183,11 +183,10 @@ namespace Dorkbots.Mapbox
                 var pos = _referenceCamera.ScreenToWorldPoint(mousePosScreen);
 
                 var latlongDelta = _mapManager.WorldToGeoPosition(pos);
-                Debug.Log("Latitude: " + latlongDelta.x + " Longitude: " + latlongDelta.y);
                 //_mapManager.UpdateMap(latlongDelta, _mapManager.Zoom);
             }
-
-            if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject())
+            // checking for both mouse button and input because when a scene reloaded get mouse would stop working
+            if ((Input.touchCount == 1 || Input.GetMouseButton(0)) && !EventSystem.current.IsPointerOverGameObject())
             {
                 var mousePosScreen = Input.mousePosition;
                 //assign distance of camera to ground plane to z, otherwise ScreenToWorldPoint() will always return the position of the camera
@@ -229,7 +228,8 @@ namespace Dorkbots.Mapbox
                             //};
                             _mapManager.UpdateMap(newLatLong, _mapManager.Zoom);
 
-                            panningSignal.Dispatch();
+                            PanningAction?.Invoke();
+
                         }
                     }
                     _origin = _mousePosition;
@@ -291,7 +291,7 @@ namespace Dorkbots.Mapbox
                             //};
                             var latitudeLongitude = new Vector2d(_mapManager.CenterLatitudeLongitude.x + offset.z * factor, _mapManager.CenterLatitudeLongitude.y + offset.x * factor);
                             _mapManager.UpdateMap(latitudeLongitude, _mapManager.Zoom);
-                            panningSignal.Dispatch();
+                            PanningAction?.Invoke();
                         }
                     }
                     _origin = _mousePosition;

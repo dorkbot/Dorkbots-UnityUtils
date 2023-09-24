@@ -6,23 +6,23 @@
 * Manged by Dorkbots
 * http://www.dorkbots.com/
 * Version: 1
-* 
+*
 * Licence Agreement
 *
 * You may distribute and modify this class freely, provided that you leave this header intact,
 * and add appropriate headers to indicate your changes. Credit is appreciated in applications
 * that use this code, but is not required.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -32,7 +32,6 @@
 * THE SOFTWARE.
 */
 using UnityEngine;
-using Signals;
 using System.Collections;
 using UnityEngine.UI;
 using System;
@@ -41,27 +40,21 @@ using Dorkbots.MonoBehaviorUtils;
 
 namespace Dorkbots.Tools
 {
-    public class CheatPatternComponent : MonoBehaviour 
+    public class CheatPatternComponent : MonoBehaviour
     {
         [SerializeField] private float timeBeforeDestroy = 0;
         [SerializeField] private float timeBetweenClicks = 2;
         [SerializeField] private Button[] buttons;
 
-        public Signal cheatActivatedSignal{ get; private set; }
+        public event Action CheatActivatedAction;
 
         private bool[] buttonStates;
         private Coroutine cheatPatternCoroutine;
         private Coroutine timerCoroutine;
 
-        // Use this for initialization
-        void Awake () 
+        void OnEnable()
         {
-            cheatActivatedSignal = new Signal();
             buttonStates = new bool[buttons.Length];
-        }
-
-        void Start()
-        {
             Button button;
             if (buttons.Length == 1)
             {
@@ -77,7 +70,7 @@ namespace Dorkbots.Tools
                     buttonStates[i] = false;
                     if (i == 0)
                     {
-                        button.onClick.AddListener(() => FirstButtonClicked());   
+                        button.onClick.AddListener(() => FirstButtonClicked());
                     }
                     else if (i == lastButtonPosition)
                     {
@@ -93,12 +86,12 @@ namespace Dorkbots.Tools
             if (timeBeforeDestroy > 0) StartStopCoroutine.StartCoroutine(ref timerCoroutine, TimerEnumerator(), this);
         }
 
-        void OnDestroy()
+        void OnDisable()
         {
-            if (cheatActivatedSignal != null)
+            if (CheatActivatedAction != null)
             {
-                cheatActivatedSignal.Dispose();
-                cheatActivatedSignal = null;
+                //cheatActivatedSignal.Dispose();TODO: cleanup of invoke
+                CheatActivatedAction = null;
             }
 
             StartStopCoroutine.StopCoroutine(ref timerCoroutine, this);
@@ -158,7 +151,7 @@ namespace Dorkbots.Tools
 
         private void ActivateCheat()
         {
-            cheatActivatedSignal.Dispatch();
+            if (CheatActivatedAction != null) CheatActivatedAction.Invoke();
 
             for (int i = 0; i < buttons.Length; i++)
             {
@@ -179,7 +172,7 @@ namespace Dorkbots.Tools
             else
             {
                 ResetCheatButton();
-            }   
+            }
         }
 
         private void MiddleButtonClicked()
