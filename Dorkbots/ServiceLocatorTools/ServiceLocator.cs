@@ -199,7 +199,7 @@ namespace Dorkbots.ServiceLocatorTools
         }
 
         /// <summary>
-        /// Use this method to Resolve for possible cases where Resolve could be called before the Type's object is registered.
+        /// Use this method to Resolve in cases where Resolve could be called before the Type's object is registered.
         /// If the Type is not already registered, then the Action param will be Invoked at the time the Type is Registered.
         /// </summary>
         /// <param name="serviceRequest">The action to invoke when the object is registered. It's immediately invoked if the object is already registered.</param>
@@ -212,6 +212,10 @@ namespace Dorkbots.ServiceLocatorTools
             }
             else
             {
+                if (!ServiceRequests.ContainsKey(typeof(T)))
+                {
+                    ServiceRequests.Add(typeof(T), null);//not needed?
+                }
                 ServiceRequests[typeof(T)] += serviceRequest;
             }
         }
