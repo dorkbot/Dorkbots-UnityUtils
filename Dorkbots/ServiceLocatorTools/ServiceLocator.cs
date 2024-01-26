@@ -72,7 +72,7 @@ namespace Dorkbots.ServiceLocatorTools
             {
                 Debug.LogError("The Service " + typeof(T) + " is already registered as a Lazy Service! Please unregister the current lazy service before registering a new lazy service.");
             }
-            else if (Services.ContainsKey(typeof(T)) || LazyServices.ContainsKey(typeof(T)))
+            else if (Services.ContainsKey(typeof(T)))
             {
                 Debug.LogError("The Service " + typeof(T) + " is already registered as a service! Please unregister the current service before registering a new lazy service.");
             }
