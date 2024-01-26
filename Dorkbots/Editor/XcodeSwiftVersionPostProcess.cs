@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
 
-namespace Dorkbots.PostProcessBuildBots
+namespace Dorkbots.EditorTools
 {
     public static class XcodeSwiftVersionPostProcess
     {

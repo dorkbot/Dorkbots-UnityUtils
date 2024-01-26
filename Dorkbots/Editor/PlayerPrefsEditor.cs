@@ -5,7 +5,7 @@ namespace Dorkbots.EditorTools
 {
     public class PlayerPrefsEditor : EditorWindow
     {
-        [MenuItem("Edit/Player Prefs")]
+        [MenuItem("Dorkbots/Player Prefs")]
         public static void openWindow()
         {
             PlayerPrefsEditor window = (PlayerPrefsEditor) EditorWindow.GetWindow(typeof(PlayerPrefsEditor));

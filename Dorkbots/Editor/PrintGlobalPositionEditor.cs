@@ -42,7 +42,7 @@ namespace Dorkbots.EditorTools
     public class PrintGlobalPositionEditor
     {
 #if UNITY_EDITOR
-        [MenuItem("Tools/Dorkbots/Print Global Position")]
+        [MenuItem("Dorkbots/Print Global Position")]
         public static void PrintGlobalPosition()
         {
             if (Selection.activeGameObject != null)
