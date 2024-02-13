@@ -5,11 +5,11 @@ namespace Dorkbots.EditorTools
 {
     public class PlayerPrefsEditor : EditorWindow
     {
-        [MenuItem("Dorkbots/Player Prefs Editor")]
+        [MenuItem("Dorkbots/PlayerPrefs Editor")]
         public static void openWindow()
         {
             PlayerPrefsEditor window = (PlayerPrefsEditor) EditorWindow.GetWindow(typeof(PlayerPrefsEditor));
-            window.titleContent = new GUIContent("Player Prefs");
+            window.titleContent = new GUIContent("PlayerPrefs Editor");
             window.Show();
         }
 
@@ -27,7 +27,7 @@ namespace Dorkbots.EditorTools
 
         void OnGUI()
         {
-            EditorGUILayout.LabelField("Player Prefs Editor", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("PlayerPrefs Editor", EditorStyles.boldLabel);
             EditorGUILayout.Separator();
 
             fieldType = (FieldType) EditorGUILayout.EnumPopup("Key Type", fieldType);
