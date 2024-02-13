@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 
 namespace Dorkbots.EditorTools
 {
     public class PlayerPrefsEditor : EditorWindow
     {
-        [MenuItem("Dorkbots/Player Prefs")]
+        [MenuItem("Dorkbots/Player Prefs Editor")]
         public static void openWindow()
         {
             PlayerPrefsEditor window = (PlayerPrefsEditor) EditorWindow.GetWindow(typeof(PlayerPrefsEditor));
@@ -28,7 +28,6 @@ namespace Dorkbots.EditorTools
         void OnGUI()
         {
             EditorGUILayout.LabelField("Player Prefs Editor", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("by RomejanicDev");
             EditorGUILayout.Separator();
 
             fieldType = (FieldType) EditorGUILayout.EnumPopup("Key Type", fieldType);
