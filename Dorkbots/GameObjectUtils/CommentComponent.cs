@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Dorkbots.GameObjectUtils
+namespace Dorkbots.GameObjectTools
 {
     /// <summary>
     /// Attach this to a Game Object and write a comment...

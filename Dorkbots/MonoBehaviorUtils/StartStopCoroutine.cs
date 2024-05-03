@@ -35,7 +35,7 @@ using UnityEngine;
 using System.Collections;
 using System;
 
-namespace Dorkbots.MonoBehaviorUtils
+namespace Dorkbots.MonoBehaviorTools
 {
     public class StartStopCoroutine
     {
@@ -73,29 +73,45 @@ namespace Dorkbots.MonoBehaviorUtils
         /// Creates and returns an object that will invoke a method using a Coroutine. It auto starts. You can use the return object to stop the Coroutine.
         /// </summary>
         /// <param name="time"></param>
-        /// <param name="callback"></param>
         /// <param name="parent"></param>
+        /// /// <param name="callback"></param>
         /// <returns>You can use the return object to stop the Coroutine.</returns>
-        public static SimpleTimerCoroutine CreateSimpleTimerCoroutine(float time, Action callback, MonoBehaviour parent)//TODO: haven't tested
+        public static SimpleTimerCoroutine CreateSimpleTimerCoroutine(float time, MonoBehaviour parent, Action callback)//TODO: haven't tested
         {
-            SimpleTimerCoroutine simpleTimerCoroutine = new SimpleTimerCoroutine(time, callback, parent);
+            SimpleTimerCoroutine simpleTimerCoroutine = new SimpleTimerCoroutine(time, parent, callback);
             simpleTimerCoroutine.Start();
             return simpleTimerCoroutine;
+        }
+        
+        /// <summary>
+        /// Creates and returns an object that will invoke a method as it lerps from one float to another within a set time. It auto starts. You can use the return object to stop the Coroutine.
+        /// </summary>
+        /// <param name="duration"></param>
+        /// <param name="startNum"></param>
+        /// <param name="endNum"></param>
+        /// <param name="parent"></param>
+        /// <param name="callback"></param>
+        /// <returns>You can use the return object to stop the Coroutine.</returns>
+        public static TimeLerpCoroutine CreateTimeLerpCoroutine(float duration, float startNum, float endNum, MonoBehaviour parent, Action<float> callback)//TODO: haven't tested
+        {
+            TimeLerpCoroutine timeLerpCoroutine = new TimeLerpCoroutine(duration, startNum, endNum, parent, callback);
+            timeLerpCoroutine.Start();
+            return timeLerpCoroutine;
         }
     }
 
     public class SimpleTimerCoroutine
     {
-        private Coroutine coroutine;
-        private float time;
-        private Action callback;
-        private MonoBehaviour parent;
+        private Coroutine _coroutine;
+        private float _time;
+        private Action _callback;
+        private MonoBehaviour _parent;
 
-        public SimpleTimerCoroutine(float time, Action callback, MonoBehaviour parent)
+        public SimpleTimerCoroutine(float time, MonoBehaviour parent, Action callback)
         {            
-            this.time = time;
-            this.callback = callback;
-            this.parent = parent;
+            _time = time;
+            _callback = callback;
+            _parent = parent;
         }
 
         /// <summary>
@@ -103,7 +119,7 @@ namespace Dorkbots.MonoBehaviorUtils
         /// </summary>
         public void Start()
         {
-            StartStopCoroutine.StartCoroutine(ref coroutine, Enumerator(), parent);
+            StartStopCoroutine.StartCoroutine(ref _coroutine, Enumerator(), _parent);
         }
 
         /// <summary>
@@ -111,7 +127,7 @@ namespace Dorkbots.MonoBehaviorUtils
         /// </summary>
         public void Stop()
         {
-            StartStopCoroutine.StopCoroutine(ref coroutine, parent);
+            StartStopCoroutine.StopCoroutine(ref _coroutine, _parent);
         }
 
         /// <summary>
@@ -120,15 +136,81 @@ namespace Dorkbots.MonoBehaviorUtils
         public void Dispose()
         {
             Stop();
-            callback = null;
-            parent = null;
+            _callback = null;
+            _parent = null;
         }
 
         private IEnumerator Enumerator()
         {
-            yield return new WaitForSeconds(time);
+            yield return new WaitForSeconds(_time);
 
-            callback();
+            _callback();
+        }
+    }
+
+    public class TimeLerpCoroutine
+    {
+        private Coroutine _coroutine;
+        private float _duration;
+        private float _startNum;
+        private float _endNum;
+        private Action<float> _callback;
+        private MonoBehaviour _parent;
+
+        /// <summary>
+        /// Iinvokes a method as it lerps from one float to another within a set time.
+        /// </summary>
+        /// <param name="duration"></param>
+        /// <param name="startNum"></param>
+        /// <param name="endNum"></param>
+        /// <param name="parent"></param>
+        /// <param name="callback"></param>
+        public TimeLerpCoroutine(float duration, float startNum, float endNum, MonoBehaviour parent, Action<float> callback)
+        {            
+            _duration = duration;
+            _startNum = startNum;
+            _endNum = endNum;
+            _callback = callback;
+            _parent = parent;
+        }
+
+        /// <summary>
+        /// Start Coroutine
+        /// </summary>
+        public void Start()
+        {
+            StartStopCoroutine.StartCoroutine(ref _coroutine, Enumerator(), _parent);
+        }
+
+        /// <summary>
+        /// Stop the Coroutine.
+        /// </summary>
+        public void Stop()
+        {
+            StartStopCoroutine.StopCoroutine(ref _coroutine, _parent);
+        }
+
+        /// <summary>
+        /// Dispose and null references
+        /// </summary>
+        public void Dispose()
+        {
+            Stop();
+            _callback = null;
+            _parent = null;
+        }
+
+        private IEnumerator Enumerator()
+        {
+            float t = 0;
+            while(t < 1)
+            {
+                _callback(Mathf.Lerp(_startNum ,_endNum, t));
+                t = t + Time.deltaTime / _duration;
+                yield return new WaitForEndOfFrame();
+            }
+
+            _callback(_endNum);
         }
     }
 }

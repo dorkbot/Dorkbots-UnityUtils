@@ -36,7 +36,7 @@ using System.Collections;
 using UnityEngine;
 using Valve.VR.InteractionSystem;
 
-namespace Dorkbots.VR.Vive
+namespace Dorkbots.XR.VR.Vive
 {
     [RequireComponent(typeof(Interactable))]
     public class ThreeDButton : MonoBehaviour

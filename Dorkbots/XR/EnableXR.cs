@@ -5,6 +5,8 @@ using UnityEngine.XR.Management;
 namespace Dorkbots.XR
 {
     /// <summary>
+    /// This fixes issues with XR tools (Steam VR, Oculus Meta XR Simulator, ect.) not launching when in play mode. Attach to a game object in a scene using XR.
+    ///
     /// Unity 2022.3 appears to not always dispose of the loader in XRGeneralSettings.Instance.Manager. This results in the console runtime error "Failed to set DeveloperMode on Start."
     /// This should only be an issue in the editor, so this script stops the XR loader and then restarts it.
     /// This script doesn't always activate the loader, maybe due to order of Awake calls, but it works most of time. Exiting Play mode and starting it again usually results in the XR loader launching...

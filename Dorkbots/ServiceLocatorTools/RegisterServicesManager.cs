@@ -62,7 +62,15 @@ namespace Dorkbots.ServiceLocatorTools
         /// <returns>Returns the value of `Registered`</returns>
         public bool CheckIfRegisteredAddCallback(Action registeredCallback)
         {
-            if (!Registered) _registeredAction += registeredCallback;
+            if (!Registered)
+            {
+                _registeredAction += registeredCallback;
+            }
+            else
+            {
+                registeredCallback.Invoke();
+            }
+            
             return Registered;
         }
 

@@ -3,7 +3,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace Dorkbots.GameObjectUtils
+namespace Dorkbots.GameObjectTools
 {
 	[CustomEditor(typeof(CommentComponent))]
 	public class CommentComponentInspector : Editor 
