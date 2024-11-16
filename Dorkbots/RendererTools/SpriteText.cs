@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Dorkbots.RendererUtils
+namespace Dorkbots.RendererTools
 {
     [RequireComponent(typeof(TextMesh))]
     public class SpriteText : MonoBehaviour

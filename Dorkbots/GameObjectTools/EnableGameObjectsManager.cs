@@ -36,7 +36,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Dorkbots.GameObjectUtils
+namespace Dorkbots.GameObjectTools
 {
     public class EnableGameObjectsManager : MonoBehaviour
     {
