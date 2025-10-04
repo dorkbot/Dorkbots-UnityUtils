@@ -79,7 +79,6 @@ namespace Dorkbots.MonoBehaviorTools
         public static SimpleTimerCoroutine CreateSimpleTimerCoroutine(float time, MonoBehaviour parent, Action callback)//TODO: haven't tested
         {
             SimpleTimerCoroutine simpleTimerCoroutine = new SimpleTimerCoroutine(time, parent, callback);
-            simpleTimerCoroutine.Start();
             return simpleTimerCoroutine;
         }
         
@@ -95,7 +94,6 @@ namespace Dorkbots.MonoBehaviorTools
         public static TimeLerpCoroutine CreateTimeLerpCoroutine(float duration, float startNum, float endNum, MonoBehaviour parent, Action<float> callback)//TODO: haven't tested
         {
             TimeLerpCoroutine timeLerpCoroutine = new TimeLerpCoroutine(duration, startNum, endNum, parent, callback);
-            timeLerpCoroutine.Start();
             return timeLerpCoroutine;
         }
     }
